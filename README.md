@@ -1,5 +1,5 @@
 # RTOSonRaspberryPi
-This project is part of my Lab work for my course at University of California, Riverside CS215 under Prof. Hoyesung Kim.
+This project is part of my Lab work for my course at University of California, Riverside CS215 under Prof. Hoyesung Kim.\\
 It includes three main folders where the most of the development was done. Namely Proj1, Proj2, Proj3.
 In Proj1 -> adding custom system call by editing system call table of the Linux Kernel. The system call outputs the number of tasks running on the Raspberry PI 
 In Proj2 -> Developed Loadable Kernel Modules (ioctl) to extend functionalities of I/O devices etc. The module loads a task to the raspberry pi and starts the timer using the hrtimer of the Linux kernel. It then restarts the task  for a fixed time interval and suspends it unless the user kills the task using CNTRL+C. After which the task is removed from the list of tasks. The user is allowed to add mutiple tasks at a time (using different terminals) and the user can kills any process using the pid. The module is able to handles any scenarios.
