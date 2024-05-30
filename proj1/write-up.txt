@@ -1,0 +1,122 @@
+REAL-TIME EMBEDDED SYSTEMS (EE_255_001_24W, CS_251_001_24W)
+
+LAB 01 - TEAM 06
+Keerthana Sunil Babu Bidare - kbida003
+Dhanush Radhakrishna - dradh003
+Akshay Jayram - ajaya026
+
+Question 1:
+How does a system call execute? Explain briefly the steps from making the call in the userspace
+process to returning from the call with a result.
+
+->
+For a user program to do something “privileged” (e.g., I/O), it must call an OS procedure. That procedure is called a system call.
+There are many system calls for different functionalities. For example open(), close() etc
+When a system call is made the mode changes from user mode to kernel mode. This is done by 
+
+User mode
+Open() (user space function)
+Trap to kernel mode
+Save the state
+Kernel Mode
+Trap handler
+Find open() handler
+Execute open() (kernel function)
+Restore state
+Return to user level
+Resume execution
+
+Making a system call in Linux kernel
+Add a new entry to the system call table (arch/arm64/include/asm/unistd.h)
+Eg - #define __NR_system_call_name 		system_call_number
+Write a system call function 
+Eg - new_system_call.c
+	Use SYSCALL_DEFINEx macro to define a system call 
+(use printk() to debug using print messages)
+Write a Kbuild file in the system call folder
+And add ‘ obj-y += count_tasks.o ‘.
+ Create a makefile and cross compile to arm64 (if you want to run it on Raspberry Pi).
+Write a test program to test your new system call (eg - test.c).
+
+Testing your system call
+Compile the kernel code (./compile.sh)
+Compile your test.c file (gcc test.c)
+Run your binary file of the test.c after compiling (eg - ./a.out).
+If you want to test it on Raspberry Pi
+Run ‘make’ in the new system call folder (this will cross compile to arm64 architecture)
+Transfer the binary file of the cross compiled test code (eg - test.o) and the packed version of the kernel (kernel.tgz) to the Raspberry Pi.
+Run ./test.o
+Your new system call is tested on the raspberry pi or the host system.
+
+Question 2:
+Take a look at the container_of macro defined in include/linux/container_of.h. What does it do and how is it implemented? Explain with an example.
+ 
+->
+container_of  is a macro in the Linux kernel that helps to retrieve the address of the containing structure from a pointer to one of its members.
+
+Example:
+
+#include <stdio.h>
+
+// Defining offsetof macro to calculate the offset of a member within a structure
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+
+// Defining container_of macro to obtain a pointer to the containing structure
+#define container_of(ptr, type, member) ({                             
+    const typeof(((type *)0)->member) *__mptr = (ptr);                  
+    (type *)((char *)__mptr - offsetof(type, member));})
+
+int main(void) {
+    struct Sample {
+        int member1;
+        char member2;
+    };
+
+    // Creating an instance of the sample structure
+    struct Sample sample1;
+
+    // Printing the address of the structure using the normal method
+    printf("Address of Structure sample1 (Normal Method) = %p\n", &sample1);
+
+
+    // Printing the address of the structure using the container_of method
+    printf("Address of Structure sample1 (container_of Method) = %p\n",
+           container_of(&sample1.member2, struct Sample, member2));
+
+
+    return 0;
+}
+
+The above example has one structure that contains two members(mem1 and mem2) and we are getting the structure address by mem2.
+
+
+Implementation:
+
+The offsetof macro calculates the offset of a member within a structure. It takes advantage of the fact that the address of the structure is 0 when accessing the member.
+
+The container_of macro uses the offset calculated by offsetof to obtain a pointer to the containing structure. It uses the address of the member passed as ptr and subtracts the offset to get the address of the structure.
+
+In the main function, an instance of the struct Sample is created, and the addresses of the structure are printed using both the normal method (&sample1) and the container_of method container_of(&sample1.member2, struct Sample, member2). The latter should yield the same address as the former, demonstrating the effectiveness of the container_of macro.
+
+Question 3:
+Contributions
+
+->
+Keerthana Bidare (kbida003) 
+Setup of Virtual Machine
+Part 4.1  Implementing user space application
+Part 4.3.1 and 4.3.2 Implementing count_rt_tasks system call and the test_count_rt_tasks
+
+Dhanush Radhakrishna (dradh003)
+Setup of Raspberry pi.
+Part 4.3.3 Overriding syscall at runtime (mod_count_tasks)
+Report
+
+Akshay Jayaram (ajaya026)
+Setup of wifi connection.
+Part 4.2 Loadable kernel module.
+Report.
+
+
+
+
